@@ -8,7 +8,12 @@ const path = '/addcat'
 
 const callback = function (req, res, next) {
   const { name, sex } = req.body
-  checkParams(req, res, next, [name, sex])
+  const params = {
+    name,
+    sex
+  }
+
+  checkParams(params)
   .then(() => {
     const Cat = db.model('test', CatSchema, 'Cat')
 
@@ -19,13 +24,11 @@ const callback = function (req, res, next) {
 
     kitty.save((dbErr, dbRes) => {
       if (dbErr) return console.log(dbErr)
-      resTemplate(res, statusCodeSuccess, messageSuccess, dbRes._doc)
-      .then(() => next())
-      .catch(e => next())
+      res.json(resTemplate(statusCodeSuccess, messageSuccess, dbRes._doc))
     })
 
   })
-  .catch(e => next())
+  .catch(json => res.json(json))
 }
 
 module.exports.path = path
